@@ -21,7 +21,7 @@ scene.add(mesh)
 const sizes = {
     width: 800,
     height: 600
-}
+        }
 
 /**
  * Camera
