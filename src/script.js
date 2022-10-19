@@ -15,14 +15,22 @@ import { Colors, LayerFlags } from "@tarikjabiri/dxf";
 const dxf = new DxfWriter();
 
 function main() {
-    drawText();
+    drawArc();
     // To get the dxf string just call the stringify() method
     const dxfString = dxf.stringify();
     save(dxfString);
 }
 
+function drawArc() {
+    const myArc = dxf.addArc(point3d(0, 0, 0), 10, 0, 45);
+    console.log('myArc: ', myArc);
+}
+
 function drawText() {
-    const text = dxf.addText(point3d(20, 20, 0), 10, 'GGWP')
+    const text = dxf.addText(point3d(20, 20, 0), 10, 'GGWP', {
+        rotation: 30,
+        relativeXScaleFactor: 2,
+    })
     console.log('text: ', text);
 }
 
