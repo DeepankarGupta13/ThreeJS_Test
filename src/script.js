@@ -15,6 +15,7 @@ import { Colors, LayerFlags } from "@tarikjabiri/dxf";
 const dxf = new DxfWriter();
 
 function main() {
+    addLayer();
     drawArc();
     // To get the dxf string just call the stringify() method
     const dxfString = dxf.stringify();
@@ -23,6 +24,7 @@ function main() {
 
 function drawArc() {
     const myArc = dxf.addArc(point3d(0, 0, 0), 10, 0, 45);
+    myArc.layerName = 'YashRao';
     console.log('myArc: ', myArc);
 }
 
@@ -39,11 +41,15 @@ function drawDimension() {
     console.log('dim: ', dim);
 }
 
+function addLayer() {
+    const layer = dxf.addLayer("hey there", Colors.Red, "Continuous");
+    console.log('layer: ', layer);
+    dxf.addLayer("YashRao", Colors.Green, "Continuous");
+}
+
 function drawCircle() {
     // dxf.addCircle(point3d(0, 0, 0), 10);
     // or
-    const layer = dxf.addLayer("hey there", Colors.Red, "Continuous");
-    dxf.addLayer("YashRao", Colors.Green, "Continuous");
     dxf.addCircle(point3d(0, 0, 0), 5, {layerName: 'hey there'});
     const options = {
         layerName : 'hey there',
