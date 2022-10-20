@@ -15,16 +15,25 @@ import { Colors, LayerFlags } from "@tarikjabiri/dxf";
 const dxf = new DxfWriter();
 
 function main() {
+    drawText();
     addLayer();
     drawArc();
+    line();
+    addImage();
     // To get the dxf string just call the stringify() method
     const dxfString = dxf.stringify();
     save(dxfString);
 }
 
+function line() {
+    const axesLType = dxf.addLType("AXES", "_ _ ", [1, -1, 1, -1]); 
+    const line = dxf.addLine(point3d(0, 0, 0), point3d(100, 100, 0), {lineType: 'AXES'});
+    line.layerName = 'YashRao'
+}
+
 function drawArc() {
     const myArc = dxf.addArc(point3d(0, 0, 0), 10, 0, 45);
-    myArc.layerName = 'YashRao';
+    myArc.layerName = 'hey there';
     console.log('myArc: ', myArc);
 }
 
@@ -34,6 +43,21 @@ function drawText() {
         relativeXScaleFactor: 2,
     })
     console.log('text: ', text);
+}
+
+function addImage() {
+    const imgDef = dxf.addImage(
+        "test.png", // Or the absolute path of the image if it isn't int the same folder.
+        "test",
+        point3d(462419.04, 576568.45, 0), // Insertion point of the bottomLeft corner of the image.
+        1792, // the width of the image
+        1280, // the height of the image
+        1, // Scale
+        0 // rotation
+      );
+    // imgDef.imgDefReactor = '2F';
+    // console.log('imgDefReactor: ', imgDefReactor);
+    console.log('imgDef: ', imgDef);
 }
 
 function drawDimension() {
@@ -47,6 +71,7 @@ function addLayer() {
     dxf.addLayer("YashRao", Colors.Green, "Continuous");
 }
 
+//added block in this function
 function drawCircle() {
     // dxf.addCircle(point3d(0, 0, 0), 10);
     // or
