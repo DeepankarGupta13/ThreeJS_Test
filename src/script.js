@@ -15,7 +15,7 @@ import { Colors, LayerFlags } from "@tarikjabiri/dxf";
 const dxf = new DxfWriter();
 
 function main() {
-    drawImage();
+    drawLine();
     // To get the dxf string just call the stringify() method
     const dxfString = dxf.stringify();
     save(dxfString);
@@ -43,7 +43,7 @@ function drawText() {
 
 function drawImage() {
     const imgDef = dxf.addImage(
-        "C:/Users/deepa/OneDrive/Desktop/threejsPrac/ThreeJS_Test/src/test.png", // Or the absolute path of the image if it isn't int the same folder.
+        "door.jpg", // Or the absolute path of the image if it isn't int the same folder.
         "test",
         point3d(462419.04, 576568.45, 0), // Insertion point of the bottomLeft corner of the image.
         1792, // the width of the image
