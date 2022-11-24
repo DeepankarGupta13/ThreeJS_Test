@@ -8,6 +8,10 @@ import {
     HatchBoundaryPaths,
     pattern,
     HatchPredefinedPatterns,
+    LWPolylineFlags,
+    PolylineFlags,
+    gradient,
+    GradientType,
 } from "@tarikjabiri/dxf";
 import { saveAs } from 'file-saver';
 import { Colors, LayerFlags } from "@tarikjabiri/dxf";
@@ -15,16 +19,66 @@ import { Colors, LayerFlags } from "@tarikjabiri/dxf";
 const dxf = new DxfWriter();
 
 function main() {
-    drawLine();
+    // drawPolyLine();
+    // addLeader();
+    // drawLine();
+    // addUnits();
+    // drawText();
+    // addLayer();
+    drawHatch();
     // To get the dxf string just call the stringify() method
     const dxfString = dxf.stringify();
     save(dxfString);
 }
 
-function line() {
-    const axesLType = dxf.addLType("AXES", "_ _ ", [1, -1, 1, -1]); 
+function addLeader() {
+    const vertices = [
+        {
+            point: point2d(0, 0, 0),
+        },
+        {
+            point: point2d(1, 1, 0),
+        },
+    ];
+    const leader = dxf.addLeader(vertices);
+    dxf.addLayer("Blue", Colors.Blue, "Continuous");
+    leader.layerName = 'Blue';
+}
+
+function drawPolyLine() {
+    const vertices = [
+        {
+            point: point2d(0, 0, 0),
+        },
+        {
+            point: point2d(100, 100, 0),
+        },
+        {
+            point: point2d(100, 100, 0),
+        },
+        {
+            point: point2d(100, 200, 0),
+        },
+        {
+            point: point2d(100, 200, 0),
+        },
+        {
+            point: point2d(0, 300, 0),
+        },
+    ];
+    console.log('vertices: ', vertices);
+    dxf.addLWPolyline(vertices, {
+        flags: LWPolylineFlags.Closed,
+    });
+}
+
+function drawLine() {
     const line = dxf.addLine(point3d(0, 0, 0), point3d(100, 100, 0), {lineType: 'AXES'});
-    line.layerName = 'YashRao'
+}
+
+function addUnits() {
+    const header = dxf.header.setVariable('$INSUNITS', { 70: 6 });
+    console.log('header: ', header);
 }
 
 function drawArc() {
@@ -34,11 +88,12 @@ function drawArc() {
 }
 
 function drawText() {
-    const text = dxf.addText(point3d(20, 20, 0), 10, 'GGWP', {
+    const text = dxf.addText(point3d(20, 20, 0), 1, 'GGWP', {
         rotation: 30,
-        relativeXScaleFactor: 2,
+        horizontalAlignment: 1,
+        verticalAlignment: 2,
     })
-    console.log('text: ', text);
+    text.secondAlignmentPoint = point3d(20, 20, 0);
 }
 
 function drawImage() {
@@ -94,27 +149,50 @@ function drawCircle() {
 function drawHatch() {
     const polyline = new HatchPolylineBoundary();
     polyline.add(vertex(0, 0));
-    polyline.add(vertex(0, 10000));
-    polyline.add(vertex(10000, 10000));
-    polyline.add(vertex(10000, 0));
+    polyline.add(vertex(0, 20));
+    polyline.add(vertex(10, 20));
+    polyline.add(vertex(10, 0));
 
-    const edges = new HatchEdgesTypeData();
-    edges.addLineEdgeData(point2d(0, 0), point2d(0, 10000));
-    edges.addLineEdgeData(point2d(0, 10000), point2d(10000, 10000));
-    edges.addLineEdgeData(point2d(10000, 10000), point2d(10000, 0));
-    edges.addLineEdgeData(point2d(10000, 0), point2d(0, 0));
+    const polyline1 = new HatchPolylineBoundary();
+    polyline1.add(vertex(1, 1));
+    polyline1.add(vertex(1, 9));
+    polyline1.add(vertex(9, 9));
+    polyline1.add(vertex(9, 1));
+
+    const polyline2 = new HatchPolylineBoundary();
+    polyline2.add(vertex(1, 13));
+    polyline2.add(vertex(1, 19));
+    polyline2.add(vertex(9, 19));
+    polyline2.add(vertex(9, 13));
+
+
+    // const edges = new HatchEdgesTypeData();
+    // edges.addLineEdgeData(point2d(0, 0), point2d(0, 10000));
+    // edges.addLineEdgeData(point2d(0, 10000), point2d(10000, 10000));
+    // edges.addLineEdgeData(point2d(10000, 10000), point2d(10000, 0));
+    // edges.addLineEdgeData(point2d(10000, 0), point2d(0, 0));
 
     const boundary = new HatchBoundaryPaths();
     // Add the defined path
-    boundary.addPolylineBoundary(polyline);
+    boundary.addPolylineBoundary(polyline, PolylineFlags.External);
+    boundary.addPolylineBoundary(polyline1, PolylineFlags.Outermost);
+    boundary.addPolylineBoundary(polyline2, PolylineFlags.Outermost);
 
-    const mysolid = pattern({
-        name: HatchPredefinedPatterns.ANSI31,
-        // Other properties you can define optionally
-        // angle?: number;
-        // scale?: number;
-        // double?: boolean;
-    });
+    // const mysolid = pattern({
+    //     name: HatchPredefinedPatterns.ANSI31,
+    //     scale: 0.05,
+    //     angle: 287.89,
+    //     // Other properties you can define optionally
+    //     // angle?: number;
+    //     // scale?: number;
+    //     // double?: boolean;
+    // });
+
+    const mysolid = gradient({
+        firstColor: 2,
+        secondColor: 1,
+        type: GradientType.CYLINDER,
+    })
 
     const hatch = dxf.addHatch(boundary, mysolid);
     console.log('hatch: ', hatch);
